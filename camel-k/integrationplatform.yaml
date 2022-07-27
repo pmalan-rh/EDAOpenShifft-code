@@ -1,0 +1,26 @@
+apiVersion: camel.apache.org/v1
+kind: IntegrationPlatform
+metadata:
+  labels:
+    app: camel-k
+  name: camel-k
+  namespace: eda-order-entry
+spec:
+  build:
+    maven:
+      localRepository: /tmp/artifacts/m2
+      settings:
+        configMapKeyRef:
+          key: settings.xml
+          name: maven-settings
+    registry: {}
+  kamelet: {}
+  resources: {}
+  traits:
+    logging:
+      configuration:
+        color: false
+    tracing:
+      configuration:
+        property:
+          enabled: true
