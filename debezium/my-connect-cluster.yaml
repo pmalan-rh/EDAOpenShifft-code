@@ -1,0 +1,35 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnect
+metadata:
+  name: my-connect-cluster
+  namespace: amq-streams
+  strimzi.io/user-connector-resources: "true"
+spec:
+  config:
+    group.id: connect-cluster
+    offset.storage.topic: connect-cluster-offsets
+    config.storage.topic: connect-cluster-configs
+    status.storage.topic: connect-cluster-status
+    config.storage.replication.factor: -1
+    offset.storage.replication.factor: -1
+    status.storage.replication.factor: -1
+  tls:
+    trustedCertificates:
+      - secretName: my-cluster-cluster-ca-cert
+        certificate: ca.crt
+  version: 3.1.0
+  build:
+    output:
+      type: imagestream
+      image: debezium-streams-connect:lastest
+    plugins:
+      - name: debezium-connector-postgresql
+        artifacts:
+          - type: zip
+            url: https://maven.repository.redhat.com/ga/io/debezium/debezium-connector-postgres/1.9.5.Final-redhat-00001/debezium-connector-postgres-1.9.5.Final-redhat-00001-plugin.zip
+          - type: zip
+            url: https://maven.repository.redhat.com/ga/io/apicurio/apicurio-registry-distro-connect-converter/2.2.2.managedsvc-redhat-00001/apicurio-registry-distro-connect-converter-2.2.2.managedsvc-redhat-00001.zip
+        
+  replicas: 1
+  bootstrapServers: 'my-cluster-kafka-bootstrap:9093'
+ 
